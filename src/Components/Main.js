@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
 import './Main.css';
 import {nanoid} from 'nanoid';
+import Confetti from 'react-confetti'
 import Die from "./Die";
 export default function Main () {
-    
+
     let [dice, setDice ] = useState(allNewDice())
     let [tenzies, settenzies ] = useState(false)
 
     useEffect(()=>{
-      console.log("Dice stat Change")
+        const allHeld = dice.every(die => die.isHeld)
+        const firstValue = dice[0].value
+        const allSameValue = dice.every(die=> die.value === firstValue)
+
+        if(allHeld && allSameValue) {
+            settenzies(true)
+            console.log("You won!")
+        }
+
     }, [dice])
 
     let diceElements = dice.map(die => <Die 
@@ -51,12 +60,13 @@ export default function Main () {
         <section className="Main">
             
              <div className="box">
+                { tenzies && <Confetti height={100} width={100}  / > }
              <h1  className="title">Dice Tenzies</h1>
             <p className="instructions">Roll until all dices are same. Click each die to freezon it at its current value between rolls</p>
                  <div className="box-item">
                    {diceElements}
                  </div>
-                 <button className="roll-dice" onClick={rollDie}>Roll</button>
+                 <button className="roll-dice" onClick={rollDie}>{tenzies ? "New Game" : "Roll"}</button>
              </div>
         </section>
     )
